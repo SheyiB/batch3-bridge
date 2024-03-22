@@ -18,6 +18,7 @@ class UserService {
 
     async getAllUsers() {
         try {
+            console.log(`Request Recieved`)
             const users = await User.findAll()
 
             return users
