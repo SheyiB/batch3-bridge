@@ -1,7 +1,8 @@
 const db = require('../models')
 
-const User = db.user
+const jwt = require('jsonwebtoken')
 
+const User = db.user
 
 class UserService {
 
@@ -10,6 +11,31 @@ class UserService {
             const user = await User.create(userInfo)
 
             return user
+        }
+        catch (error) {
+            return error
+        }
+    }
+
+    async login(body) {
+
+        try {
+            const { email, password } = body
+            let user = await User.findOne({
+                where: { email: email }
+            })
+
+            if (!user) {
+                return 'User not found'
+            }
+
+            if (user.password !== password) {
+                return 'Invalid Password'
+            }
+
+            const token = jwt.sign({ id: user.id }, 'MYAPPSECRET', { expiresIn: '1d' })
+
+            return token
         }
         catch (error) {
             return error

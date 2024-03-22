@@ -66,3 +66,16 @@ exports.deleteUser = async (req, res) => {
     }
 }
 
+
+exports.login = async (req, res) => {
+    try {
+
+        const response = await User.login(req.body)
+
+        res.status(200).json({ response })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
