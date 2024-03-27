@@ -8,7 +8,7 @@ const { deleteUser, getAllUser, getUserByMail, signup, updateUser, login } = req
 
 router.post('/signup', signup)
 router.get('/all-users', logger, signIn, decodedToken, getAllUser)
-router.get('/user/:mail', getUserByMail)
+router.get('/user/:mail', decodedToken, getUserByMail)
 router.put('/user', updateUser)
 router.delete('/user', deleteUser)
 

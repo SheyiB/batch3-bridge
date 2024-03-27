@@ -1,46 +1,71 @@
+
 const UserService = require('../services/user.service')
+const { errorHandler } = require('../utils/error')
+const { createUserValidator, updateUserValidator } = require('../validators/user.validator')
 
 
 const User = new UserService()
 
 exports.signup = async (req, res) => {
     try {
+
+        const { error } = createUserValidator(req.body)
+        //console.log(error)
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message })
+        }
         const user = await User.createUser(req.body)
+
         res.status(201).json({
             status: 'success',
             message: 'User created successfully',
             user
         })
+
+
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        errorHandler(error, res)
     }
 }
 
 
 exports.getAllUser = async (req, res) => {
     try {
+        console.log(req.user)
         const users = await User.getAllUsers()
         res.status(200).json({ users })
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        errorHandler(error, res)
     }
 }
 
 exports.getUserByMail = async (req, res) => {
     try {
-        const userEmail = req.params.mail
-        const user = await User.getUserByMail(userEmail)
 
+        const userEmail = req.params.mail
+
+        const user = await User.getUserByMail(userEmail, req.user)
+
+        if (user.code) {
+            return res.status(401).json({ message: user.message })
+        }
         res.status(200).json({ user })
     }
     catch (error) {
-        res.status(500).json({ message: error.message })
+        errorHandler(error, res)
     }
 }
 
 
 exports.updateUser = async (req, res) => {
     try {
+
+        const { error } = updateUserValidator(req.body)
+
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message })
+        }
+
         const data = req.body;
         const userId = req.body.id;
 
@@ -49,7 +74,7 @@ exports.updateUser = async (req, res) => {
         res.status(200).json({ user })
     }
     catch (error) {
-        res.status(500).json({ message: error.message })
+        errorHandler(error, res)
     }
 }
 
@@ -62,7 +87,7 @@ exports.deleteUser = async (req, res) => {
         res.status(200).json({ message: "User Deleted Successfully" })
     }
     catch (error) {
-        res.status(500).json({ message: error.message })
+        errorHandler(error, res)
     }
 }
 
@@ -75,7 +100,7 @@ exports.login = async (req, res) => {
         res.status(200).json({ response })
     }
     catch (error) {
-        res.status(500).json({ message: error.message })
+        errorHandler(error, res)
     }
 }
 
